@@ -81,6 +81,36 @@ def type_check_with_mypy(script_name):
         return False
 
 
+def analyze_with_radon_cc(script_name):
+    """Analyze the script with Radon Complexity Check and ensure that all methods are graded 'A' or 'B'."""
+    try:
+        # Run Radon CC and capture the output
+        result = subprocess.run(
+            ["radon", "cc", "-s", script_name],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        output = result.stdout
+
+        # Parse the output to find method grades
+        for line in output.split("\n")[1:]:
+            if line.strip() and not line.startswith(" "):
+                # Skip blank lines and details
+                parts = line.split()
+                # Ensure the line has enough parts to prevent IndexError
+                if len(parts) >= 3:
+                    grade = parts[2]
+                    if grade not in ["A", "B"]:
+                        return False  # Fail if any method is graded lower than 'B'
+        return True  # Pass if all methods are graded 'A' or 'B'
+
+    except subprocess.CalledProcessError:
+        # Handle any error during the Radon run
+        print("Error occurred while running Radon Complexity Check.")
+        return False
+
+
 def execute_script(script_name):
     """Execute the given Python script."""
     print("\n\033[1;43mScript Execution ...\033[0m\n")
@@ -104,6 +134,11 @@ def main(script_name):
             type_check_with_mypy,
             "Mypy type checking \033[31mFAILED\033[0m",
             "Mypy type checking \033[32mPASSED\033[0m",
+        ),
+        (
+            analyze_with_radon_cc,
+            "Radon complexity analysis \033[31mFAILED\033[0m",
+            "Radon complexity analysis \033[32mPASSED\033[0m",
         ),
     ]
 
