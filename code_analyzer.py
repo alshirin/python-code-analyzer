@@ -111,6 +111,48 @@ def analyze_with_radon_cc(script_name):
         return False
 
 
+def analyze_with_radon_mi(script_name):
+    """Analyze the script with Radon Maintainability Index Check to ensure that the maintainability index is 'A'."""
+    try:
+        # Run Radon MI and capture the output
+        result = subprocess.run(
+            ["radon", "mi", "-s", script_name],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        output = result.stdout
+        # The maintainability index is a single grade for the whole module
+        # Example line: "my_module.py - A"
+        grade = output.split()[2]
+        return grade == "A"
+
+    except subprocess.CalledProcessError:
+        # Handle any error during the Radon run
+        print("Error occurred while running Radon Maintainability Index Check.")
+        return False
+
+
+def analyze_with_radon_raw(script_name):
+    """Analyze the script with Radon Raw Metrics."""
+    try:
+        # Run Radon Raw and capture the output
+        result = subprocess.run(
+            ["radon", "raw", "-s", script_name],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        output = result.stdout
+        print(output)  # You might want to do something with this output
+        return True  # Adjust based on what you are checking for
+
+    except subprocess.CalledProcessError:
+        # Handle any error during the Radon run
+        print("Error occurred while running Radon Raw Metrics.")
+        return False
+
+
 def execute_script(script_name):
     """Execute the given Python script."""
     print("\n\033[1;43mScript Execution ...\033[0m\n")
@@ -139,6 +181,11 @@ def main(script_name):
             analyze_with_radon_cc,
             "Radon complexity analysis \033[31mFAILED\033[0m",
             "Radon complexity analysis \033[32mPASSED\033[0m",
+        ),
+        (
+            analyze_with_radon_mi,
+            "Radon Maintainability Index analysis \033[31mFAILED\033[0m",
+            "Radon Maintainability Index analysis \033[32mPASSED\033[0m",
         ),
     ]
 
