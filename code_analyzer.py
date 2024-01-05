@@ -133,6 +133,27 @@ def analyze_with_radon_mi(script_name):
         return False
 
 
+def analyze_with_radon_hal(script_name):
+    """Analyze the script with Radon Halstead Metrics."""
+    try:
+        # Run Radon Halstead and capture the output
+        result = subprocess.run(
+            ["radon", "hal", "-s", script_name],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        output = result.stdout
+        # TODO: parse output of Halstead Metrics
+        print(output)
+        return True  # Adjust based on what you are checking for
+
+    except subprocess.CalledProcessError:
+        # Handle any error during the Radon run
+        print("Error occurred while running Radon Halstead Metrics.")
+        return False
+
+
 def execute_script(script_name):
     """Execute the given Python script."""
     print("\n\033[1;43mScript Execution ...\033[0m\n")
@@ -166,6 +187,11 @@ def main(script_name):
             analyze_with_radon_mi,
             "Radon Maintainability Index analysis \033[31mFAILED\033[0m",
             "Radon Maintainability Index analysis \033[32mPASSED\033[0m",
+        ),
+        (
+            analyze_with_radon_hal,
+            "Radon Halsted metrics analysis \033[31mFAILED\033[0m",
+            "Radon Halsted metrics analysis \033[32mPASSED\033[0m",
         ),
     ]
 
