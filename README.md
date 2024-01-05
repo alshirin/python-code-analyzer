@@ -1,2 +1,2 @@
-# python-code-analyser
+# python-code-analyzer
 Static checks automation for Python code
