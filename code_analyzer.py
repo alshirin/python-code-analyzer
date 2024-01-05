@@ -3,7 +3,7 @@ import sys
 
 
 def run_command(command):
-    """Run a shell command and return its success as a boolean."""
+    """Run a shell command and return its success status as a boolean."""
     result = subprocess.run(command, shell=True)
     return result.returncode == 0
 
@@ -14,7 +14,7 @@ def format_with_black(script_name):
 
 
 def lint_with_pylint(script_name):
-    """Lint the script with Pylint and check if the rating is more than 5.0."""
+    """Lint the script with Pylint and check if the rating is more than 8.0."""
     try:
         # Run Pylint and capture the output
         result = subprocess.run(
@@ -26,7 +26,7 @@ def lint_with_pylint(script_name):
             print("Error occurred while running Pylint.")
             return False
 
-        # Parse the output for the rating
+        # Parse the output for the Pylint output
         output = result.stdout
         warnings = []
         for line in output.split("\n"):
@@ -34,17 +34,18 @@ def lint_with_pylint(script_name):
                 warnings.append(line)
             elif line.startswith("Your code has been rated at"):
                 # Extract the rating value
+                # TODO: Refactor rating extraction
                 rating_str = line.split()[6]
                 rating = float(rating_str.split("/")[0])
                 if rating >= 8.0:
                     return True
-                else:
-                    print("rating_str", rating_str)
-                    print("output", output)
-                    print("warnings:\n")
-                    for warn in warnings:
-                        print(warn)
-                    print("\n")
+                # TODO: Refactor output formatting
+                print("rating_str", rating_str)
+                print("output", output)
+                print("warnings:\n")
+                for warn in warnings:
+                    print(warn)
+                print("\n")
 
         # If the rating is not found, return False
         return False
@@ -69,11 +70,10 @@ def type_check_with_mypy(script_name):
         output = result.stdout
         if "Success: no issues found" in output:
             return True  # Success case
-        else:
-            # Mypy found issues, print them and return False
-            print("Mypy issues found:")
-            print(output)
-            return False
+        # Mypy found issues, print them and return False
+        print("Mypy issues found:")
+        print(output)
+        return False
 
     except subprocess.CalledProcessError:
         # Handle any error during the Mypy run
@@ -114,7 +114,7 @@ def analyze_with_radon_cc(script_name):
 def analyze_with_radon_mi(script_name):
     """Analyze the script with Radon Maintainability Index Check to ensure that the maintainability index is 'A'."""
     try:
-        # Run Radon MI and capture the output
+        # Run Radon Maintainability Index and capture the output
         result = subprocess.run(
             ["radon", "mi", "-s", script_name],
             capture_output=True,
@@ -177,7 +177,6 @@ def main(script_name):
             print(success)
 
     if failed_checks:
-        # print("The following checks failed:")
         print("\n\033[1;43mThe following checks failed: ...\033[0m\n")
         for error_message in failed_checks:
             print(error_message)
