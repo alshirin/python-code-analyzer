@@ -55,6 +55,32 @@ def lint_with_pylint(script_name):
         return False
 
 
+def type_check_with_mypy(script_name):
+    """Type check the script with Mypy and return True if no issues are found."""
+    try:
+        # Run Mypy and capture the output
+        result = subprocess.run(
+            ["mypy", script_name],
+            capture_output=True,
+            text=True,
+            check=False,  # Set check to False for handling the output manually
+        )
+
+        output = result.stdout
+        if "Success: no issues found" in output:
+            return True  # Success case
+        else:
+            # Mypy found issues, print them and return False
+            print("Mypy issues found:")
+            print(output)
+            return False
+
+    except subprocess.CalledProcessError:
+        # Handle any error during the Mypy run
+        print("Error occurred while running Mypy.")
+        return False
+
+
 def execute_script(script_name):
     """Execute the given Python script."""
     print("\n\033[1;43mScript Execution ...\033[0m\n")
@@ -73,6 +99,11 @@ def main(script_name):
             lint_with_pylint,
             "Pylint check \033[31mFAILED\033[0m",
             "PyLint check \033[32mPASSED\033[0m",
+        ),
+        (
+            type_check_with_mypy,
+            "Mypy type checking \033[31mFAILED\033[0m",
+            "Mypy type checking \033[32mPASSED\033[0m",
         ),
     ]
 
