@@ -38,6 +38,7 @@ def lint_with_pylint(script_name):
                 rating_str = line.split()[6]
                 rating = float(rating_str.split("/")[0])
                 if rating >= 8.0:
+                    # TODO: Return the rating value as well as boolean status
                     return True
                 # TODO: Refactor output formatting
                 print("rating_str", rating_str)
